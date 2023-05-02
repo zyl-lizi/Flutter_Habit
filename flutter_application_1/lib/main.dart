@@ -1,135 +1,57 @@
-import 'dart:async';
+// 导入 Flutter 核心库
 import 'package:flutter/material.dart';
 
+// 导入自定义的 DetailPage 类
+import 'detail_page.dart';
+
+// 应用程序入口
 void main() {
+  // 运行应用程序
   runApp(MyApp());
 }
 
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-
-  int _seconds = 0;
-  int _workTime = 25;
-  int _breakTime = 5;
-  Timer? _timer;
-  bool _isWorking = true;
-  bool _isPaused = true;
-
-  void _startTimer() {
-    _isPaused = false;
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        _seconds--;
-      });
-      if (_seconds == 0) {
-        _isWorking = !_isWorking;
-        if (_isWorking) {
-          _seconds = _workTime * 60;
-        } else {
-          _seconds = _breakTime * 60;
-        }
-      }
-    });
-  }
-
-  void _pauseTimer() {
-    if(_timer != null) {
-      setState(() {
-        _isPaused = true;
-      });
-      _timer!.cancel();
-      _timer = null;
-    }
-  }
-
-  void _resetTimer() {
-    if(_timer != null) {
-      _timer!.cancel();
-      _timer = null;
-    }
-    setState(() {
-      _seconds = _workTime * 60;
-      _isWorking = true;
-      _isPaused = true;
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
+// 应用程序的根组件
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // 创建 MaterialApp 组件
     return MaterialApp(
+      // 设置应用程序的标题
       title: 'MyApp',
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Pomodoro Timer'),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(_isWorking ? 'Work Time' : 'Break Time', style: TextStyle(fontSize: 24)),
-              SizedBox(height: 20),
-              Text('${_seconds ~/ 60}:${(_seconds % 60).toString().padLeft(2, '0')}', style: TextStyle(fontSize: 48)),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    child: Text('Start'),
-                    onPressed: _isPaused ? _startTimer : null,
-                  ),
-                  ElevatedButton(
-                    child: Text('Pause'),
-                    onPressed: !_isPaused ? _pauseTimer : null,
-                  ),
-                  ElevatedButton(
-                    child: Text('Reset'),
-                    onPressed: _resetTimer,
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-              Text('Work Time: $_workTime minutes'),
-              Slider(
-                value: _workTime.toDouble(),
-                min: 1,
-                max: 60,
-                divisions: 59,
-                onChanged: (value) {
-                  setState(() {
-                    _workTime = value.toInt();
-                    if (_isWorking) {
-                      _seconds = _workTime * 60;
-                    }
-                  });
-                },
-              ),
-              Text('Break Time: $_breakTime minutes'),
-              Slider(
-                value: _breakTime.toDouble(),
-                min: 1,
-                max: 30,
-                divisions: 29,
-                onChanged: (value) {
-                  setState(() {
-                    _breakTime = value.toInt();
-                    if (!_isWorking) {
-                      _seconds = _breakTime * 60;
-                    }
-                  });
-                },
-              ),
-            ],
-          ),
+      // 设置应用程序的初始路由
+      initialRoute: '/',
+      // 配置应用程序的路由表
+      routes: {
+        // 首页路由
+        '/': (context) => HomePage(),
+        // 详情页路由
+        '/detail': (context) => DetailPage(),
+      },
+    );
+  }
+}
+
+// 首页组件
+class HomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // 创建 Scaffold 组件
+    return Scaffold(
+      // 设置 Scaffold 组件的 AppBar
+      appBar: AppBar(
+        title: Text('Home'),
+      ),
+      // 设置 Scaffold 组件的主体内容
+      body: Center(
+        // 创建一个 ElevatedButton 组件
+        child: ElevatedButton(
+          // 设置按钮的文本
+          child: Text('Go to detail page'),
+          // 设置按钮的点击事件
+          onPressed: () {
+            // 跳转到详情页
+            Navigator.pushNamed(context, '/detail');
+          },
         ),
       ),
     );
